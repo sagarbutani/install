@@ -1,5 +1,9 @@
 #install
-apt install docker.io -y
+sudo apt update
+sudo apt install docker.io -y
+
+##permission ma error ave tyre
+sudo chown $USER /var/run/docker.sock
 
 ##if demon error ave to jo ubuntu ne user tarike add krva mate
 sudo usermod -aG docker ubuntu
