@@ -1,0 +1,18 @@
+#install
+apt install docker.io -y
+
+##if demon error ave to jo ubuntu ne user tarike add krva mate
+sudo usermod -aG docker ubuntu
+
+#docker-compose ma error ave tyre 
+
+cd ~/
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+docker-compose --version
+ 
