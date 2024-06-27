@@ -1,0 +1,63 @@
+#both master and worker node need this installaction
+
+#update system
+sudo apt-get update -y  
+
+#tarnsport certificates
+sudo apt-get install -y apt-transport-https ca-certificates gpg
+
+#docker install   
+sudo apt  install docker.io -y  
+
+#need a permision whithout sudo
+sudo chown $USER /var/run/docker.sock
+
+#enable & start docker 
+sudo systemctl enable docker   
+
+#adding GPG keys.
+
+# If the directory `/etc/apt/keyrings` does not exist, it should be created before the curl command, read the note below.
+# sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+# This overwrites any existing configuration in /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+sudo systemctl enable --now kubelet
+
+
+
+
+#"{only for master node}"
+
+#init the masternod
+sudo kubeadm init
+
+#To start using your cluster, you need to run the following as a regular user:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#crate network
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
+
+#create a tocken
+kubeadm token create --print-join-command
+
+
+
+
+#"{now, set worker-nodes}"
+
+#chaeck and restart kubeadm 
+sudo kubeadm reset pre-flight checks
+
+#put a tocken hear in nodes
+
+sudo <token> --v=5
